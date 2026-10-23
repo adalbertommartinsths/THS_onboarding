@@ -1,4 +1,5 @@
 # Servidores Express só para uso local: se enviados, a Vercel detecta o
-# projeto como app Express em vez de site estático (public/).
+# projeto como app Express em vez de site estático (index.html na raiz).
 server.js
 dev-server.js
+README.md
