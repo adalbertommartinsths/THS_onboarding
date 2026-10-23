@@ -2,14 +2,14 @@
   "name": "ths-onboarding",
   "version": "1.0.0",
   "private": true,
-  "description": "Trilha de onboarding THS/SSP - servidor Node para desenvolvimento local e deploy na Vercel",
-  "main": "server.js",
+  "description": "Trilha de onboarding THS/SSP - site estático para deploy na Vercel, com servidor Node opcional para desenvolvimento local",
+  "main": "dev-server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "start": "node dev-server.js",
+    "dev": "node dev-server.js"
   },
   "engines": {
-    "node": ">=18.x"
+    "node": "18.x"
   },
   "dependencies": {
     "express": "^4.19.2"

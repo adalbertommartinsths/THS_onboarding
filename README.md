@@ -2,7 +2,7 @@
 
 Projeto Node.js pronto para deploy na [Vercel](https://vercel.com), empacotando a
 trilha de onboarding (`public/index.html`, uma página única autocontida) como
-site estático, com um servidor Express incluído para rodar localmente.
+site estático, com um servidor Express opcional incluído para rodar localmente.
 
 ## Estrutura
 
@@ -12,10 +12,19 @@ site estático, com um servidor Express incluído para rodar localmente.
 │   └── index.html      # a trilha de onboarding completa (HTML/CSS/JS inline)
 ├── api/
 │   └── health.js        # exemplo de função serverless Node (GET /api/health)
-├── server.js             # servidor Express para desenvolvimento local
+├── dev-server.js         # servidor Express para desenvolvimento local (não usado em produção na Vercel)
 ├── package.json
-└── vercel.json           # configuração de deploy estático na Vercel
+└── vercel.json           # configuração de deploy estático na Vercel ("framework": null)
 ```
+
+> **Por que `dev-server.js` e não `server.js`?** A Vercel detecta automaticamente
+> frameworks de backend Node.js quando encontra `express` nas dependências
+> combinado com um arquivo como `server.js`/`app.js`/`index.js` na raiz. Isso
+> fazia a Vercel tentar rodar este projeto como uma aplicação de servidor (e
+> procurar o entrypoint *dentro* de `public/`, causando falha de build). Por
+> isso o servidor de desenvolvimento foi renomeado para `dev-server.js` e o
+> `vercel.json` define `"framework": null` — assim a Vercel trata o projeto
+> como um site 100% estático, exatamente como ele roda em produção.
 
 ## Rodando localmente
 
