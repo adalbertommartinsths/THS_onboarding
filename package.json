@@ -9,7 +9,7 @@
     "dev": "node dev-server.js"
   },
   "engines": {
-    "node": "18.x"
+    "node": "24.x"
   },
   "dependencies": {
     "express": "^4.19.2"
