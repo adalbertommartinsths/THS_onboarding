@@ -77,6 +77,7 @@
     color: #ffcd94;
   }
   html[data-theme="dark"] .modal-status.ok { color: #4ade80; }
+  html[data-theme="dark"] .modal-status.warn { color: #fbbf24; }
   html[data-theme="dark"] .workflow-cat.cat-inprogress .workflow-cat-header {
     background: rgba(253,186,116,0.14);
   }
@@ -676,6 +677,7 @@
   }
   .modal-status.ok { color: #067647; font-weight: 700; }
   .modal-status.err { color: var(--red-700); font-weight: 700; }
+  .modal-status.warn { color: #b45309; font-weight: 700; }
 
   /* ---- Link de material de apoio (ex.: slides no SharePoint) ---- */
   .resource-link {
@@ -2423,6 +2425,7 @@
       finishError: '✖ Não foi possível registrar. Tente novamente.',
       finishSuccessTermo: '✔ Termo assinado e e-mail de confirmação enviado.',
       finishErrorTermo: '✖ Não foi possível enviar o e-mail de confirmação. Tente novamente.',
+      finishWarningTermo: '⚠ Termo assinado, mas não foi possível enviar o e-mail de confirmação. A equipe de TI será notificada; você pode seguir em frente.',
       finalTitle: 'Trilha 100% concluída!',
       finalText: 'Parabéns por concluir sua trilha de integração. Todas as etapas foram registradas na planilha de onboarding.',
       finalButton: 'Fechar',
@@ -2502,6 +2505,7 @@
       finishError: '✖ No fue posible registrar. Intente de nuevo.',
       finishSuccessTermo: '✔ Término firmado y correo de confirmación enviado.',
       finishErrorTermo: '✖ No fue posible enviar el correo de confirmación. Intente de nuevo.',
+      finishWarningTermo: '⚠ Término firmado, pero no fue posible enviar el correo de confirmación. El equipo de TI será notificado; puede continuar.',
       finalTitle: '¡Ruta 100% completada!',
       finalText: '¡Felicidades por completar su ruta de incorporación! Todas las etapas fueron registradas en la planilla de incorporación.',
       finalButton: 'Cerrar',
@@ -2581,6 +2585,7 @@
       finishError: '✖ Could not save. Please try again.',
       finishSuccessTermo: '✔ Term signed and confirmation e-mail sent.',
       finishErrorTermo: '✖ Could not send the confirmation e-mail. Please try again.',
+      finishWarningTermo: '⚠ Term signed, but the confirmation e-mail could not be sent. IT will be notified; you may continue.',
       finalTitle: 'Path 100% completed!',
       finalText: 'Congratulations on completing your onboarding path. All steps have been recorded in the onboarding spreadsheet.',
       finalButton: 'Close',
@@ -5119,12 +5124,12 @@ Solicitante: Sandro - Gerência da Fábrica.</code></pre>
       payload.aceite = true;
     }
 
-    const finishStage = (msg, ok) => {
+    const finishStage = (msg, ok, statusClass) => {
       btnConcludeBusy = false;
       const modalAindaNestaEtapa = currentStageId === stageIdAtStart;
       if (modalAindaNestaEtapa) {
         modalStatus.textContent = msg;
-        modalStatus.className = 'modal-status ' + (ok ? 'ok' : 'err');
+        modalStatus.className = 'modal-status ' + (statusClass || (ok ? 'ok' : 'err'));
       }
 
       if (ok) {
@@ -5171,7 +5176,11 @@ Solicitante: Sandro - Gerência da Fábrica.</code></pre>
       // (via função serverless /api/send-termo-email, Microsoft Graph/O365)
       // com o nome completo assinado + dados da etapa, para
       // adalberto.martins@ths.inf.br com cópia para sandro.silva@ths.inf.br.
-      // A etapa só é marcada como concluída se o e-mail for realmente enviado.
+      // A assinatura do termo já foi feita pelo colaborador ao preencher o
+      // nome e clicar em concluir — o envio do e-mail é só a notificação da
+      // TI/RH, então uma falha no envio (fora do ar, credencial expirada
+      // etc.) não deve travar o colaborador: a etapa é concluída mesmo
+      // assim, só avisando que o e-mail não foi enviado.
       registrarNaPlanilha();
       fetch('/api/send-termo-email', {
         method: 'POST',
@@ -5183,7 +5192,7 @@ Solicitante: Sandro - Gerência da Fábrica.</code></pre>
           return resposta.json();
         })
         .then(() => finishStage(t('finishSuccessTermo'), true))
-        .catch(() => finishStage(t('finishErrorTermo'), false));
+        .catch(() => finishStage(t('finishWarningTermo'), true, 'warn'));
       return;
     }
 
